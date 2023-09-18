@@ -46,6 +46,20 @@ const getOne = async (id) => {
   }
 };
 
+const search = async (body) => {
+  try {
+    const menuItems = await MenuItems.find({
+      $or: [
+        { name: { $regex: body, $options: "i" } },
+        { description: { $regex: body, $options: "i" } }
+      ]
+    });
+    return menuItems;
+  } catch (error) {
+    return error;
+  }
+};
+
 const create = async (body) => {
   try {
     const menuItem = await MenuItems.create(body);
@@ -65,4 +79,4 @@ const remove = async (id) => {
   return menu.id;
 };
 
-module.exports = { getAll, getOne, create, update, remove, MenuItems };
+module.exports = { getAll, getOne, search, create, update, remove, MenuItems };
