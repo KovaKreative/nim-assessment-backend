@@ -57,6 +57,15 @@ const getAll = async () => {
   return orders;
 };
 
+const getSales = async (from = new Date(0), to = Date.now()) => {
+  // omitting cancelled orders since those shouldn't count towards sales
+  const orders = await Order.find({
+    status: { $ne: "cancelled" },
+    createdAt: { $gte: from, $lte: to }
+  }).populate("items.item");
+  return orders;
+};
+
 const getOne = async (id) => {
   const order = await Order.findById(id).populate("items.item");
   return order;
@@ -77,13 +86,19 @@ const remove = async (id) => {
   return order.id;
 };
 
-const getByStatus = async (status) => {
-  const orders = await Order.find({ status }).populate("items");
+const getByStatus = async (status, from = new Date(0), to = Date.now()) => {
+  const orders = await Order.find({
+    status,
+    createdAt: { $gte: from, $lte: to }
+  })
+    .sort({ createdAt: 1 })
+    .populate("items");
   return orders;
 };
 
 module.exports = {
   getAll,
+  getSales,
   getOne,
   create,
   update,
