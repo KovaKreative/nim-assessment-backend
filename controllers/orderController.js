@@ -23,8 +23,10 @@ const getOne = async (req, res) => {
 };
 
 const getTotalSales = async (req, res) => {
+  const { from, to } = req.query;
+
   try {
-    const orders = await Order.getAll();
+    const orders = await Order.getSales(from, to);
 
     const totalSales = orders.reduce((salesAccumulator, currentOrder) => {
       const orderTotal = currentOrder.items.reduce(
@@ -79,8 +81,11 @@ const getByCustomer = async (req, res) => {
 };
 
 const getByStatus = async (req, res) => {
+  const { s, from, to } = req.query;
+
   try {
-    const orders = await Order.getByStatus(req.params.status);
+    const orders = await Order.getByStatus(s, from, to);
+
     res.send(orders);
   } catch (error) {
     res.status(500).send(error);
